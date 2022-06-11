@@ -63,14 +63,14 @@ class Main extends Component {
                 >
                     UN-STAKE...
                 </button>
-                { this.props.account == this.props.owner ? (
+                { this.props.account === this.props.owner ? (
                     <button
-                    type='submit'
-                    className='btn btn-issue btn-block btn-lg'
-                    onClick={(event) => {
-                        event.preventDefault()
-                        this.props.issueTokens()
-                    }}
+                        type='submit'
+                        className='btn btn-issue btn-block btn-lg'
+                        onClick={(event) => {
+                            event.preventDefault()
+                            this.props.issueTokens()
+                        }}
                     >
                         Issue Token!
                     </button>
