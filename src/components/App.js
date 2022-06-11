@@ -6,6 +6,16 @@ import TokenFarm from '../abis/TokenFarm.json'
 import Navbar from './Navbar'
 import Main from './Main'
 import './App.css'
+import { styled } from "@mui/material/styles";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+
+// StyledPaperコンポーネント
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  maxWidth: 600,
+  backgroundColor: '#fde9e8'
+}));
 
 /**
  * Appコンポーネント
@@ -141,6 +151,16 @@ class App extends Component {
     })
   }
 
+  /**
+   * Rewardトークンを発行するメソッド
+   */
+  issueTokens = () => {
+    this.setState({loading: true})
+    this.state.tokenFarm.methods.autoIssueTokens().send({from: this.state.account}).on('transactionHash', (hash) => {
+      this.setState({loading: false})
+    })
+  };
+
   render() {
     let content
 
@@ -153,6 +173,7 @@ class App extends Component {
         stakingBalance = {this.state.stakingBalance}
         stakeTokens = {this.stakeTokens}
         unstakeTokens={this.unstakeTokens}
+        issueTokens={this.issueTokens}
       />
     }
 
@@ -169,7 +190,11 @@ class App extends Component {
                   rel="noopener noreferrer"
                 >
                 </a>
-                {content}
+                <Box sx={{ flexGrow: 1, overflow: "hidden", px: 3, mt: 10}}>
+                  <StyledPaper sx={{my: 1, mx: "auto", p: 0, borderRadius: 4, marginTop: 4}}>
+                    {content}
+                  </StyledPaper>
+                </Box>
               </div>
             </main>
           </div>
