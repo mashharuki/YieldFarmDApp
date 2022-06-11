@@ -13,3 +13,6 @@
 4. `npm run start` を実行してプロジェクトを開始します。
 
 5. コーディングを始めましょう。
+
+### DAPPトークン発行用スクリプトファイル実行コマンド
+ `truffle exec scripts/issue-token.js`

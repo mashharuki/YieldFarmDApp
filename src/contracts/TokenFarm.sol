@@ -9,6 +9,7 @@ contract TokenFarm{
       string public name = "Dapp Token Farm";
       DappToken public dappToken;
       DaiToken public daiToken;
+      address public owner;
       // array of staker's addresses
       address[] public stakers;
 
@@ -19,6 +20,7 @@ contract TokenFarm{
       constructor(DappToken _dappToken, DaiToken _daiToken) public {
             dappToken = _dappToken;
             daiToken = _daiToken;
+            owner = msg.sender;
       }
 
       /**
@@ -41,5 +43,39 @@ contract TokenFarm{
             hasStaked[msg.sender] = true;
       }
 
+      /**
+       * issue token func
+       */
+      function issueTokens() public {
+            // check msg.sender is owner
+            require(msg.sender == owner, "caller must be the owner");
 
+            // issue
+            for(uint i=0; i<stakers.length; i++){
+                  // get addresses
+                  address recipient = stakers[i];
+                  // get balance
+                  uint balance = stakingBalance[recipient];
+
+                  if(balance > 0){
+                        // send Dapp token
+                        dappToken.transfer(recipient, balance);
+                  }
+            }
+      }
+
+      /**
+       * unstake func 
+       */
+      function unstakeTokens() public {
+            // get staking balance 
+            uint balance = stakingBalance[msg.sender];
+            // check balance
+            require(balance > 0, "staking balance cannot be 0");
+            // send dai token
+            daiToken.transfer(msg.sender, balance);
+            // update staking balance and status!!
+            stakingBalance[msg.sender] = 0;
+            isStaking[msg.sender] = false;
+      }
 }
