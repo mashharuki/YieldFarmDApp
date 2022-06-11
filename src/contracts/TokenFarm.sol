@@ -68,7 +68,7 @@ contract TokenFarm{
        * Auto issue reward token func
        */
       function autoIssueTokens() public {
-             // check status
+            // check status
             require(isStaking[msg.sender] = true, "this address is not staking!!");
             // get balance
             uint balance = stakingBalance[msg.sender];

@@ -38,6 +38,7 @@ class App extends Component {
     // ステートを定義する。
     this.state = {
       account: '0x0',
+      owner: '0x0',
       daiToken: {},
       dappToken: {},
       tokenFarm: {},
@@ -114,7 +115,10 @@ class App extends Component {
       // TokenFarmコントラクトのオブジェクトを作成
       const tokenFarm = new web3.eth.Contract(TokenFarm.abi, tokenFarmData.address)
       this.setState({tokenFarm})
-
+      // ownerアドレスを取得する。
+      let owner = await tokenFarm.methods.owner().call();
+      console.log("owner:", owner);
+      this.setState({owner});
       // ステーキングしている残高を取得する。
       let tokenFarmBalance = await tokenFarm.methods.stakingBalance(this.state.account).call()
       // String型に変換してステートを更新する。
@@ -156,7 +160,7 @@ class App extends Component {
    */
   issueTokens = () => {
     this.setState({loading: true})
-    this.state.tokenFarm.methods.autoIssueTokens().send({from: this.state.account}).on('transactionHash', (hash) => {
+    this.state.tokenFarm.methods.issueTokens().send({from: this.state.account}).on('transactionHash', (hash) => {
       this.setState({loading: false})
     })
   };
@@ -168,6 +172,8 @@ class App extends Component {
       content = <p id='loader' className='text-center'>Loading...</p>
     }else{
       content = <Main
+        account = {this.state.account}
+        owner = {this.state.owner}
         daiTokenBalance = {this.state.daiTokenBalance}
         dappTokenBalance = {this.state.dappTokenBalance}
         stakingBalance = {this.state.stakingBalance}
