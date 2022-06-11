@@ -7,9 +7,7 @@ const DaiToken = artifacts.require(`DaiToken`);
 const TokenFarm = artifacts.require(`TokenFarm`);
 
 const { assert } = require('chai');
-require(`chai`)
-    .use(require('chai-as-promised'))
-    .should()
+require(`chai`).use(require('chai-as-promised')).should()
 
 /**
  * ETHをWeiに変換するメソッド
@@ -65,6 +63,34 @@ contract('TokenFarm', ([owner, investor]) => {
               let balance = await dappToken.balanceOf(tokenFarm.address)
               assert.equal(balance.toString(), tokens('1000000'))
           })
+      })
+
+      // ステーキング機能用のテストシナリオ
+      describe('Farming tokens', async () => {
+            it('rewords investors for staking mDai tokens', async () => {
+                let result
+                // 投資家の残高を確認する。
+                result = await daiToken.balanceOf(investor)
+                assert.equal(result.toString(), tokens('100'), 'investor Mock DAI wallet balance correct before staking')
+    
+                // TokenFarmmコントラクトに100トークン送金する権限をapproveする。
+                await daiToken.approve(tokenFarm.address, tokens('100'), {from: investor})
+                // ステーキング実行
+                await tokenFarm.stakeTokens(tokens('100'), {from: investor})
+    
+                // 残高が想定した通りになっていることを確認する。
+                result = await daiToken.balanceOf(investor)
+                assert.equal(result.toString(), tokens('0'), 'investor Mock DAI wallet balance correct after staking')
+                result = await daiToken.balanceOf(tokenFarm.address)
+                assert.equal(result.toString(), tokens('100'), 'Token Farm Mock DAI balance correct after staking')
+    
+                // ステーキングした結果を取得する。
+                result = await tokenFarm.stakingBalance(investor)
+                assert.equal(result.toString(), tokens('100'), 'investor staking balance correct after staking')
+                // ステーキングしたことになっていること。
+                result = await tokenFarm.isStaking(investor)
+                assert.equal(result.toString(), 'true', 'investor staking status correct after staking')
+            })
       })
 })
 
